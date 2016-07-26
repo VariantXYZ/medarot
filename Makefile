@@ -1,4 +1,3 @@
-#gawk sort order
 export LC_CTYPE=C
 
 .SUFFIXES: .asm .o .gbc
