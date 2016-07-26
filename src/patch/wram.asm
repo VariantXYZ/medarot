@@ -1,4 +1,4 @@
-; Allocate section in WRAM for personal use
+; Allocate section in WRAM for patch use
 
 SECTION "Hack", WRAMX[$DEA0]
 
