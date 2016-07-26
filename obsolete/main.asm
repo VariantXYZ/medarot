@@ -92,63 +92,7 @@ INCBIN "baserom.gbc", $2eb0,$2faa-$2eb0
     ret
 ; 0x2fcf
 
-PutString: ; 2fcf
-	ld a, h
-	ld [$c640], a
-	ld a, l
-	ld [$c641], a
-	ld a, b
-	ld [$c642], a
-	ld a, c
-	ld [$c643], a
-.char
-	ld a, [$c640]
-	ld h, a
-	ld a, [$c641]
-	ld l, a
-	ld a, [hl]
-	cp $50
-	ret z
-	ld [$c64e], a
-	call $2068
-	ld a, [$c64f]
-	or a
-	jp z, $300d
-	ld a, [$c642]
-	ld h, a
-	ld a, [$c643]
-	ld l, a
-	ld bc, $ffe0
-	add hl, bc
-	ld a, [$c64f]
-	di
-	call $17cb
-	ld [hl], a
-	ei
-	ld a, [$c642]
-	ld h, a
-	ld a, [$c643]
-	ld l, a
-	ld a, [$c64e]
-	di
-	call $17cb
-	ld [hl], a
-	ei
-	inc hl
-	ld a, h
-	ld [$c642], a
-	ld a, l
-	ld [$c643], a
-	ld a, [$c640]
-	ld h, a
-	ld a, [$c641]
-	ld l, a
-	inc hl
-	ld a, h
-	ld [$c640], a
-	ld a, l
-	ld [$c641], a
-	jp .char
+
 ; 0x303b
 
 INCBIN "baserom.gbc", $303b,$328f-$303b
@@ -416,74 +360,7 @@ INCBIN "baserom.gbc", $3a69,$4000-$3a69
 SECTION "bank1",DATA,BANK[$1]
 INCBIN "baserom.gbc", $4000,$4a9f-$4000
 
-SetupInitialNameScreen: ;4a9f
-    xor a
-    ld hl, $c5c9
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld hl, $c923
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [$c6c6], a
-    ld hl, $c6a2
-    ld a, $9a
-    ld [hli], a
-    ld a, $85
-    ld [hli], a
-    ld a, $a8
-    ld [hli], a
-    ld a, $50
-    ld [hli], a
-    xor a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld [hli], a
-    ld a, $3
-    ld [$c5ce], a
-    ld a, $2
-    call $015f
-    ld a, $3
-    call $015f
-    ld b, $0
-    ld c, $0
-    ld e, $2
-    call $015c
-    ld b, $2
-    ld c, $6
-    ld e, $2b
-    call $015c
-    ld b, $1
-    ld c, $1
-    ld e, $29
-    call $015c
-    ld hl, $c6a2
-    ld bc, $984a
-    call $0264
-    call $5213
-    ld a, $1
-    ld [$ffa0], a
-    ld a, $4
-    call $017d
-    ld b, $5
-    ld c, $5
-    ld d, $5
-    ld e, $5
-    ld a, $2
-    call $0309
-    jp $0168
+
 ; 0x4b1c
 INCBIN "baserom.gbc", $4b1c,$8000-$4b1c
 
