@@ -1,3 +1,5 @@
+INCLUDE "src/patch/patch.asm"
+
 INCLUDE "src/core/core.asm"
 INCLUDE "src/hardware/hardware.asm"
 INCLUDE "src/gfx/gfx.asm"
