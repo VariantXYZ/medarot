@@ -1,68 +1,5 @@
 SECTION "bank0",HOME
-SECTION "rst0",HOME[$0]
-	pop hl
-	add a
-	rst $28
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	jp [hl]
 
-SECTION "rst8",HOME[$8]
-	reti
-
-SECTION "rst10",HOME[$10] ; Bankswitch
-	ld [$2000], a
-	ret
-
-SECTION "rst18",HOME[$18] 
-	ld a, [$c6e0]
-	ld [$2000], a
-	ret
-
-SECTION "rst20",HOME[$20]
-	add l
-	ld l, a
-	ret c
-	dec h
-	ret
-
-SECTION "rst28",HOME[$28]
-	add l
-	ld l, a
-	ret nc
-	inc h
-	ret
-
-SECTION "rst30",HOME[$30]
-    add a
-    rst $28
-    ld a, [hli]
-    ld h, [hl]
-    ld l, a
-    ret
-
-SECTION "rst38",HOME[$38] ; Unused
-	ld a, [hli]
-	ld l, [hl]
-	ld h, a
-	ret
-
-SECTION "vblank",HOME[$40] ; vblank interrupt
-	jp $049b
-
-SECTION "lcd",HOME[$48] ; lcd interrupt
-	jp $04d0
-
-SECTION "timer",HOME[$50] ; timer interrupt
-	nop
-
-SECTION "serial",HOME[$58] ; serial interrupt
-	jp $3e12
-
-SECTION "joypad",HOME[$60] ; joypad interrupt
-	reti
-	
 SECTION "romheader",HOME[$100]
 
 INCBIN "baserom.gbc", $100, $50
@@ -70,20 +7,6 @@ INCBIN "baserom.gbc", $100, $50
 SECTION "start",HOME[$150]
 
 INCBIN "baserom.gbc", $150,$cb7-$150
-
-CopyVRAMData: ;  cb7
-	ld a, [hli]
-	di
-	call $17cb
-	ld [de], a
-	ei
-	inc de
-	dec bc
-	ld a, b
-	or c
-	jr nz, CopyVRAMData ; 0xcc2 $f3
-	ret
-; 0xcc5
 
 
 INCBIN "baserom.gbc", $cc5,$1cc9-$cc5
@@ -619,8 +542,8 @@ LoadMedarotterData: ;Load Medarotter Names 2e58 to 2eaf
     ld [$c740], a
     xor a
     ld [$c741], a
-    ret 
-;2eb0	
+    ret
+;2eb0
 INCBIN "baserom.gbc", $2eb0,$2faa-$2eb0
     ld a, $17
     ld [$2000], a
@@ -721,7 +644,7 @@ LoadItemData: ;328f to 32b8, 0x29 bytes
 	rl b
 	sla c
 	rl b
-	sla c 
+	sla c
 	rl b
 	sla c
 	rl b
@@ -735,7 +658,7 @@ LoadItemData: ;328f to 32b8, 0x29 bytes
 	dec b
 	jr nz,.asm_032b2
 	ret
-	
+
 LoadMedalData: ;0x32b9 to 0x32de, 0x26 bytes
 	push af
 	ld a,$17
@@ -748,7 +671,7 @@ LoadMedalData: ;0x32b9 to 0x32de, 0x26 bytes
 	rl b
 	sla c
 	rl b
-	sla c 
+	sla c
 	rl b
 	add hl, bc
 	ld de,$C6A2
@@ -760,7 +683,7 @@ LoadMedalData: ;0x32b9 to 0x32de, 0x26 bytes
 	dec b
 	jr nz,.asm_032d8
 	ret
-	
+
 INCBIN "baserom.gbc",$32df,$34f0-$32df
 
 ;TODO: Find out what these unknowns are
@@ -887,7 +810,7 @@ LoadMedarotNameData: ;35dc to 35ff, 0x21 bytes
 	ret
 
 INCBIN "baserom.gbc", $3600,$39da-$3600
-;0:39da 
+;0:39da
 PrepareDamageForDisplay: ;Writes damage characters to c705
 	push hl
 	push bc
@@ -1284,7 +1207,7 @@ unk_044de8:
     jp nz, $4ded
     ret
 	;10e55
-	
+
 unk_044e55:
     xor a
     ld [$c5c2], a
@@ -2219,7 +2142,7 @@ unk_0558f4: ;05:58f4, 0x158f4
     ret
 ; 0x1591a
 INCBIN "baserom.gbc", $1591a,$18000-$1591a
-	
+
 SECTION "bank6",DATA,BANK[$6]
 INCBIN "baserom.gbc", $18000,$4000
 

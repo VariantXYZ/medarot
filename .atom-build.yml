@@ -1,1 +1,1 @@
-cmd: make
+cmd: make clean && make

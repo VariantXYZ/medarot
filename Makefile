@@ -9,7 +9,7 @@ medarot.o: medarot.asm
 	rgbasm -o medarot.o medarot.asm
 
 medarot.gbc: medarot.o
-	rgblink -o $@ $<
+	rgblink -O baserom.gbc -o $@ $<
 	rgbfix -v -k 9C -l 0x33 -m 0x03 -p 0 -r 3 -t "MEDAROT KABUTO" $@
 	cmp baserom.gbc $@
 
