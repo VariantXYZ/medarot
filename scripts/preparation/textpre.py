@@ -44,14 +44,14 @@ with open('text/chars.tbl', encoding='utf-8') as f:
             i += 1
         else:
             i = int(char[1:], 16)
-    
+
 for line in open("text/extras/medarot1.tbl", encoding='utf-8').readlines():
     if line.strip():
         a, b = line.strip('\n').split("=", 1)
         tablejp[b.replace("\\n", '\n')] = int(a, 16)
 
 vwf_table = [0]*0x80
-with open('src/vwftable.asm') as f:
+with open('src/patch/vwftable.asm') as f:
     for line in f.readlines():
         if line and not line.startswith(';'):
             for num in line.split(', '):
@@ -69,16 +69,16 @@ def set_additional_file(buf = 0):
     n = 0
     additional_file = build + "/Additional_" + str(n) + ".bin"
     f = open(additional_file,'ab')
-    f.seek(0,2) 
+    f.seek(0,2)
     pos = 0
     while(f.tell() + buf >= pad-1):
-        
+
         f.close()
         n = n+1
         additional_file = build + "/Additional_" + str(n) + ".bin"
         f = open(additional_file,'ab')
         pos = f.seek(0,2)
-     
+
     additional_file_bank = 0x2c + n
     additional_file_ptr = 0x4000 + pos
     return f
@@ -88,17 +88,17 @@ NB = 0x4C
 
 def pack_string(string, table, ignore_vwf):
     string = string.rstrip('\n').replace('\n\n', '␤').replace('\r','')
-    
+
     text_data = b""
     line_data = b""
     line_px = 0
     word_data = b""
     word_px = 0
-    
+
     special = ""
     ended = False
     skip = False
-    
+
     even_line = True
     quote_flag = False
     for char in string:
@@ -114,7 +114,7 @@ def pack_string(string, table, ignore_vwf):
                     special_num = int(special, 16)
                 except ValueError: # temporary
                     is_literal = False
-                    
+
                 if is_literal and not special.startswith("D"):
                     if special_num > 255:
                         sys.stderr.write("Warning: Invalid literal special {} (0x{:3x})".format(special_num, special_num))
@@ -136,24 +136,24 @@ def pack_string(string, table, ignore_vwf):
                         if name == val:
                             val = value
                             matched = True
-                    
+
                     if not matched:
                         val = int(val, 16)
-                    
+
                     if val == "": val = s.default
-                    
+
                     if s.bts:
                         fmt = b"<"+(b"", b"B", b"H", b"xH")[s.bts]
                         word_data += struct.pack(fmt, val)
-                    
+
                     if s.end: ended = True
-                    
+
                     if special[0] == "&":
                         if val == 0xd448: # num
                             word_px += 3*8
                         else:
                             word_px += 8*8
-                
+
                 special = ""
             else:
                 special += char
@@ -217,11 +217,11 @@ def pack_string(string, table, ignore_vwf):
         text_data += line_data
     else:
         text_data = word_data
-    
-    
+
+
     if not ended:
         text_data += b"\x4f\x00" # end chars
-    
+
     return text_data
 
 MODE_LITERAL = 0
@@ -240,19 +240,19 @@ def compress_tmap(tmap):
             if ord(byte) != curbyte:
                 break
             methods[MODE_REPEAT] += 1
-        
+
         # inc
         for i, byte in zip(range(64), tmap[1:]):
             if ord(byte) != (curbyte+1+i)&0xff:
                 break
             methods[MODE_INC] += 1
-        
+
         # dec
         for i, byte in zip(range(64), tmap[1:]):
             if ord(byte) != (curbyte-1-i)&0xff:
                 break
             methods[MODE_DEC] += 1
-        
+
         best = max(methods, key=methods.get)
         if methods[best] >= 1:# or curbyte == 0xfe:
             while literal_bytes:
@@ -270,7 +270,7 @@ def compress_tmap(tmap):
         else:
             literal_bytes.append(curbyte)
             tmap = tmap[1:]
-        
+
         #print best, methods, hex(curbyte),  literal_bytes, compressed
     while literal_bytes:
         compressed += chr((MODE_LITERAL << 0x6) + len(literal_bytes)-1 if len(literal_bytes) < 64 else 63)
@@ -292,12 +292,12 @@ if mode == "list":
         bts = b""
         for char in line.strip():
             bts += chr(table[char])
-        
+
         bts += b"\x50"
-        
+
         if len(bts) > pad:
             raise ValueError("Too long: ",line)
-        
+
         while len(bts) < pad:
             bts += b"\x00"
         sys.stdout.write(bts)
@@ -315,26 +315,26 @@ elif mode == "bank":
             pointers[int(cols[0], 16)] = (cols[2].rstrip(), cols[3].rstrip())
             if(not pointers[int(cols[0], 16)][1].startswith("=")):
                 total_ptr += 1
-            
+
     pts_data = b""
     text_data = b""
-    
+
     offsets = {}
 
     free_space = pad-2*len(pointers)
-    
-    
-    max_size = free_space/total_ptr #Enforce a max size for each unique string    
+
+
+    max_size = free_space/total_ptr #Enforce a max size for each unique string
     file = set_additional_file()
-        
+
     assert max_size > 4, "Maximum possible size of text below 5, need to find another solution"
 
-    #Super lazy copy paste, this can be made wayyyy more efficient but as of the time of writing this, it's not worth the effort! 
-    for pointer in sorted(pointers.keys()):   
+    #Super lazy copy paste, this can be made wayyyy more efficient but as of the time of writing this, it's not worth the effort!
+    for pointer in sorted(pointers.keys()):
         jap, eng = pointers[pointer]
         text_data_tmp = b""
-		
-        if not eng.startswith("="):            
+
+        if not eng.startswith("="):
             if len(eng):
                 text_data_tmp += b"\x49" # set english
                 string = eng
@@ -344,22 +344,22 @@ elif mode == "bank":
                 eng = string
                 #text_data += b"\x48" # set japanese
                 #string = jap
-            
+
             text_data_tmp += pack_string(string, table if len(eng) else tablejp, not len(eng))
             l = len(text_data_tmp)
-            
+
             if(l > max_size):
                 free_space -= max_size
             else:
                 free_space -= l
-                
-    
+
+
     assert free_space >= 0, "Free space less than 0"
 
     sys.stderr.write("Unique Strings: " + str(total_ptr) + "\n")
     sys.stderr.write("Free Space: " + str(free_space) + "\n")
     sys.stderr.write("Max Size: " + str(max_size) + "\n")
-                
+
     #for pointer in sorted(pointers.keys()):
     for pointer in sorted(pointers.keys()):
         jap, eng = pointers[pointer]
@@ -369,11 +369,11 @@ elif mode == "bank":
         if eng.startswith("="):
             #jap, eng = pointers[int(eng.lstrip('='), 16)]
             pts_data_tmp += struct.pack(b"<H", offsets[int(eng.lstrip('='), 16)])
-        else:            
+        else:
             offset = 0x4000+len(pointers)*2+len(text_data)
             offsets[pointer] = offset
             pts_data_tmp += struct.pack(b"<H", offset)
-            
+
             if len(eng):
                 text_data_tmp += b"\x49" # set english
                 string = eng
@@ -383,10 +383,10 @@ elif mode == "bank":
                 eng = string
                 #text_data += b"\x48" # set japanese
                 #string = jap
-            
+
             text_data_tmp += pack_string(string, table if len(eng) else tablejp, not len(eng))
-            l = len(text_data_tmp)            
-            
+            l = len(text_data_tmp)
+
             if(l > max_size + free_space):
                 tmp_new = b""
                 tmp = text_data_tmp[0:max_size+free_space-5]
@@ -399,10 +399,10 @@ elif mode == "bank":
                 elif(b'\x4b' in tmp[-3:]):
                     idx = tmp[-3:].index(b'\x4b')
                     tmp_new += tmp[-3+idx:]
-                    tmp = tmp[0:max_size+free_space-5+idx].ljust(max_size+free_space-1, b'\x00')   
+                    tmp = tmp[0:max_size+free_space-5+idx].ljust(max_size+free_space-1, b'\x00')
                 tmp_new += text_data_tmp[max_size+free_space-5:] + b'\x50'
                 s = struct.pack(b"<BBHB", 0x4B, additional_file_bank, additional_file_ptr, 0x50)
-                tmp += s              
+                tmp += s
                 text_data_tmp = tmp
                 if(file.tell() + len(tmp_new) > pad-1):
                     file.close()
@@ -412,17 +412,17 @@ elif mode == "bank":
                 free_space = 0 #If we enter this part, it means there's no free space left to use
             elif (l > max_size):
                 free_space -= (l-max_size)
-    
+
         text_data += text_data_tmp
         pts_data += pts_data_tmp
-                      
+
     data = pts_data + text_data
     data = data.ljust(pad-1, b'\x00') # XXX why -1?
 
     sys.stdout.write(data)
 
     file.close()
-    
+
 elif mode == "tilemaps":
     tmaps = []
     for i in range(0xf1): # XXX hardcoded
