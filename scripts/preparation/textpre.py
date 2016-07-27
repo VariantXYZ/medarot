@@ -51,7 +51,7 @@ for line in open("text/extras/medarot1.tbl", encoding='utf-8').readlines():
         tablejp[b.replace("\\n", '\n')] = int(a, 16)
 
 vwf_table = [0]*0x80
-with open('src/patch/vwftable.asm') as f:
+with open('src/patch/english/vwf/vwftable.asm') as f:
     for line in f.readlines():
         if line and not line.startswith(';'):
             for num in line.split(', '):

@@ -67,11 +67,11 @@ download: $(TEXT) cleanadditional
 preparation: $(BUILD) $(TEXT) $(BUILD_ADDITIONAL) $(LISTS_OBJ) $(SNIPPETS_OBJ) $(STORYTEXT_OBJ) $(BUILD)/tilemaps.bin
 
 #Build tilemaps
-$(BUILD)/tilemaps.bin: $(wildcard $(TEXT)/tilemaps/*.txt) $(SRC)/patch/vwftable.asm $(TEXT)/chars.tbl
+$(BUILD)/tilemaps.bin: $(wildcard $(TEXT)/tilemaps/*.txt) $(SRC)/patch/english/vwf/vwftable.asm $(TEXT)/chars.tbl
 	$(PYTHON) scripts/preparation/textpre.py tilemaps 0x4000 > $(BUILD)/tilemaps.bin
 
 #Handle snippets and dialog
-$(BUILD)/%.$(BIN_TYPE): $(TEXT)/%.$(TEXT_TYPE) $(SRC)/patch/vwftable.asm
+$(BUILD)/%.$(BIN_TYPE): $(TEXT)/%.$(TEXT_TYPE) $(SRC)/patch/english/vwf/vwftable.asm
 	$(PYTHON) scripts/preparation/textpre.py bank 0x4000 $(BUILD_ADDITIONAL) < $(TEXT)/$(*F).$(TEXT_TYPE) > $(BUILD)/$(*F).$(BIN_TYPE)
 
 #Handle Lists
