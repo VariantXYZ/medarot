@@ -1,1 +1,1 @@
-cmd: make clean && make
+cmd: make rom

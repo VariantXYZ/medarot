@@ -35,7 +35,7 @@ TEXT := $(BASE)/text
 CC := rgbasm
 CC_ARGS :=
 LD := rgblink
-LD_ARGS :=
+LD_ARGS := -O baserom.gbc
 FIX := rgbfix
 FIX_ARGS := -v -k 9C -l 0x33 -m 0x13 -p 0 -r 3 -t "MEDAROT KABUTO"
 

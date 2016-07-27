@@ -1,4 +1,4 @@
-; Special exception, not included in patch.asm, but rather in hack.asm
+SECTION "VWF Definitions", ROMX[$4000], BANK[$24]
 
 db 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0
 db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
