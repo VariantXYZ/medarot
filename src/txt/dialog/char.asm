@@ -23,14 +23,14 @@ PutChar:
 	and $f0
 	swap a
 	push af
-	ld hl, $1d3b
+	ld hl, TextTableBanks
 	ld b, $0
 	ld c, a
 	add hl, bc
 	ld a, [hl]
-	rst $10
+	rst $10 ;Swap to the correct bank
 	pop af
-	ld hl, $1d4b
+	ld hl, TextTableOffsets ;Go to the start of the dialog in this bank
 	ld b, $0
 	ld c, a
 	sla c

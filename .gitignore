@@ -6,3 +6,4 @@ text/
 *.bin
 *.sn1
 *.sna
+build/
