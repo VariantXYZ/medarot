@@ -1,6 +1,5 @@
 ; Allocate section in WRAM for patch use
-
-SECTION "Hack", WRAMX[$DEA0]
+SECTION "hack_wram", WRAMX[$DEA0]
 
 TempA:
   ds 1

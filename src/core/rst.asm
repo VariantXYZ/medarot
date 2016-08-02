@@ -1,4 +1,3 @@
-
 SECTION "rst0", ROM0[$0]
 	pop hl
 	add a
@@ -8,16 +7,48 @@ SECTION "rst0", ROM0[$0]
 	ld l, a
 	jp [hl]
 
-SECTION "rst8",ROM0[$8]
-	reti
+SECTION "rst8",ROM0[$8] ; HackPredef
+	ld [TempA], a ; 3
+	jp Rst8Cont
+
+SECTION "rst8Cont",ROM0[$62]
+Rst8Cont:
+	ld a, [hBank]
+	ld [BankOld],a
+	ld a, BANK(HackPredef)
+	ld [$2000], a
+	call HackPredef
+	ld [TempA], a
+	ld a, [BankOld]
+	cp a, $17
+	jr z, .bs
+	cp a, $1f
+	jr nc, .bs ; bank swap
+	ld a, [$c6e0]
+.bs
+	ld [$2000], a
+	ld a, [TempA]
+	ret
+
+; TODO: Move to txt/special.asm
+Char4EAdvice:
+  ld a, $6
+	rst $8
+  jp Char4E
+
+Char4AAdvice:
+	ld a, $6
+	rst $8
+	jp Char4A
 
 SECTION "rst10, bank swap",ROM0[$10]
+	ld [hBank], a
 	ld [$2000], a
   ret
 
 SECTION "rst18",ROM0[$18]
   ld a, [$c6e0]
-  ld [$2000], a
+  rst $10
   ret
 
 SECTION "rst20",ROM0[$20]

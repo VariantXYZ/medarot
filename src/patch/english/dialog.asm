@@ -1,3 +1,5 @@
+; TODO: Move font into this section
+
 SECTION "English Dialog 1", ROMX[$4000], BANK[$20]
 StoryText1:
   INCBIN "build/Dialogue_1.bin"
